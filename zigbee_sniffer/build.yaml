@@ -1,3 +1,6 @@
+# The base image by tag, in the form Home Assistant (and its add-on linter) accepts. Releases build
+# from base-images.yaml, which pins the same tags by digest; CI checks the two agree. To move to a
+# newer base, change the tag here and the line in base-images.yaml (tools/base_digest.sh prints it).
 build_from:
-  aarch64: ghcr.io/home-assistant/aarch64-base-python:3.12-alpine3.20
-  amd64: ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.20
+  aarch64: ghcr.io/home-assistant/aarch64-base-python:3.12-alpine3.24
+  amd64: ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.24
