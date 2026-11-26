@@ -1,0 +1,64 @@
+name: Zigbee Sniffer
+version: "0.7.1"
+slug: zigbee_sniffer
+description: >-
+  Zigbee troubleshooting from one or more ESP32 sniffers (on Wi-Fi bridges or plugged in over USB): device history (signal, retries,
+  routes, mesh link costs, joins/leaves/route errors), floor maps with a coverage heat map, a
+  mesh map, live and stored frames fully decoded.
+url: https://github.com/home-controls/zigbee-sniffer
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:access-point-network
+panel_title: Zigbee Sniffer
+panel_admin: true
+homeassistant_api: true
+# USB sniffers (usb_sniffers): the radio's own USB port is a serial device on this box
+uart: true
+services:
+  - mqtt:want
+map:
+  - share:rw
+  - homeassistant_config:ro
+options:
+  sniffer_host: ""
+  sniffer_port: 6638
+  sniffer_name: Main
+  more_sniffers: []
+  usb_sniffers: []
+  channel: 25
+  retention_days: 7
+  max_storage_mb: 2000
+  decode: true
+  update_token: ""
+  publish_to_ha: true
+  device_sensors: true
+  zigbee_studio: true
+schema:
+  sniffer_host: str
+  sniffer_port: port
+  sniffer_name: str?
+  more_sniffers:
+    - name: str
+      host: str
+      port: port?
+  usb_sniffers:
+    - name: str?
+      device: device(subsystem=tty)
+  channel: int(11,26)
+  retention_days: int(1,90)
+  max_storage_mb: int(100,50000)
+  decode: bool
+  update_token: password?
+  publish_to_ha: bool
+  device_sensors: bool
+  zigbee_studio: bool?
+ports:
+  17760/tcp: null
+ports_description:
+  17760/tcp: Live capture for Wireshark (interface TCP@<HA address>:17760). Leave empty to keep it off.

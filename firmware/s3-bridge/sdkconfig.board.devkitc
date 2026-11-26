@@ -1,0 +1,8 @@
+# ESP32-S3-DevKitC-1-N16R8 (ESP32-S3-WROOM-1-N16R8): 16 MB flash, 8 MB octal PSRAM (takes GPIO35-37).
+# The radio link uses the header pins labelled TX (GPIO43) / RX (GPIO44), the Kconfig defaults.
+# They are also wired to the board's USB-to-UART chip (the port labelled UART): power the board
+# from the port labelled USB, and leave UART unplugged while the C6 is wired (tested 2026-11-07:
+# ~1000 frames, 1 checksum error at boot). GPIO17/18 are the clean alternative: set
+# CONFIG_BRIDGE_UART_TX_GPIO=17 / CONFIG_BRIDGE_UART_RX_GPIO=18 and move the wires.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_SPIRAM_MODE_OCT=y

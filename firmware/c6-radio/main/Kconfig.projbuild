@@ -1,0 +1,63 @@
+menu "Zigbee sniffer radio"
+
+    config SNIFF_CHANNEL
+        int "802.15.4 channel at boot"
+        range 11 26
+        default 25
+        help
+            The channel to listen on (Zigbee2MQTT's default is 11). The HA app can change it at runtime.
+
+    choice SNIFF_LINK
+        prompt "Link to the bridge or the app"
+        default SNIFF_LINK_UART
+        help
+            UART: wired to an ESP32-S3 Wi-Fi bridge (the original pair).
+            USB: the chip's own USB port, plugged straight into the Home Assistant box; the HA app
+            reads it as a USB sniffer. The console log moves to UART0 so the USB carries frames only.
+
+        config SNIFF_LINK_UART
+            bool "UART to the Wi-Fi bridge"
+        config SNIFF_LINK_USB
+            bool "USB to the Home Assistant box"
+            depends on SOC_USB_SERIAL_JTAG_SUPPORTED
+    endchoice
+
+    config SNIFF_UART_TX_GPIO
+        int "UART TX GPIO (to the bridge's RX)"
+        depends on SNIFF_LINK_UART
+        default 16
+        help
+            XIAO ESP32C6 pad D6 = GPIO16.
+
+    config SNIFF_UART_RX_GPIO
+        int "UART RX GPIO (from the bridge's TX)"
+        depends on SNIFF_LINK_UART
+        default 17
+        help
+            XIAO ESP32C6 pad D7 = GPIO17.
+
+    config SNIFF_UART_BAUD
+        int "UART baud rate"
+        depends on SNIFF_LINK_UART
+        default 921600
+
+    config SNIFF_XIAO_RF_SWITCH
+        bool "Drive the XIAO ESP32C6 antenna switch"
+        default y if IDF_TARGET_ESP32C6
+        default n
+        help
+            The XIAO ESP32C5 has no antenna switch: its radio goes straight to the U.FL socket.
+
+    config SNIFF_EXTERNAL_ANTENNA
+        bool "Use the U.FL external antenna"
+        depends on SNIFF_XIAO_RF_SWITCH
+        default n
+
+    config SNIFF_LED_GPIO
+        int "Activity LED GPIO (-1 = none)"
+        range -1 30
+        default 15 if IDF_TARGET_ESP32C6
+        default 27 if IDF_TARGET_ESP32C5
+        default -1
+
+endmenu

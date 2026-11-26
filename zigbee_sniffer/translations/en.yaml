@@ -1,0 +1,61 @@
+configuration:
+  sniffer_host:
+    name: Sniffer bridge address
+    description: IP address of the sniffer's Wi-Fi bridge (it prints it at boot; give it a DHCP reservation).
+  sniffer_port:
+    name: Sniffer bridge port
+    description: TCP port of the bridge, 6638.
+  sniffer_name:
+    name: Sniffer name
+    description: What to call this sniffer when there are several (default Main).
+  more_sniffers:
+    name: More sniffers
+    description: >-
+      Other sniffer bridges to listen through as well, each with a name and its address (port
+      6638 unless set). A transmission heard by several is counted once; each sniffer's signal
+      is kept, for the map and the coverage estimate.
+  usb_sniffers:
+    name: USB sniffers
+    description: >-
+      Sniffer radios plugged straight into this box's USB (a XIAO ESP32C5 or ESP32C6 with the USB
+      sniffer firmware, radio 0.3+): a name and the device (pick the /dev/serial/by-id/ one, which
+      survives replugging). No bridge, Wi-Fi or update token: the app updates its firmware over
+      the cable. Keep it on a short extension cable, away from the Zigbee and Thread dongles.
+  channel:
+    name: Zigbee channel
+    description: Channel to listen on, the one Zigbee2MQTT uses (25 here).
+  retention_days:
+    name: Keep captures and history (days)
+    description: Capture files and the device history older than this are deleted.
+  max_storage_mb:
+    name: Storage limit (MB)
+    description: The oldest capture files are also deleted when they take more than this.
+  decode:
+    name: Decode with tshark
+    description: >-
+      Decrypt frames with the network key from Zigbee2MQTT: decoded summaries, the full decode of
+      any frame, joins/leaves/route errors and the mesh map. Off keeps only what the clear headers say.
+  update_token:
+    name: Firmware update token
+    description: >-
+      The bridge's CONFIG_BRIDGE_UPDATE_TOKEN (in s3-bridge/sdkconfig.secrets). With it, the Sniffer
+      page can update the radio and bridge firmware over Wi-Fi. Empty: updates from here are off.
+  publish_to_ha:
+    name: Publish to Home Assistant
+    description: >-
+      Sensors for the sniffer and each Zigbee device over MQTT (needs the Mosquitto add-on), and
+      zigbee_sniffer_event events on Home Assistant's bus for leaves, rejoins, route errors and
+      sniffer outages.
+  device_sensors:
+    name: A health sensor per Zigbee device
+    description: >-
+      Adds a "Zigbee health" sensor (ok / note / warning / problem / not heard) to each
+      Zigbee2MQTT device in Home Assistant, with its findings as attributes.
+  zigbee_studio:
+    name: Share with Zigbee Studio
+    description: >-
+      Lets the Zigbee Studio add-on read devices, health, charts and live frames and set up the
+      floor maps (nothing else: not the channel, firmware or sniffers), with a key kept in
+      /share/zigbee_sniffer. Off: only this page gets answers.
+network:
+  17760/tcp: Live capture for Wireshark (interface TCP@<HA address>:17760). Leave empty to keep it off.

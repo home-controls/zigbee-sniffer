@@ -1,0 +1,9 @@
+# ESP32-S3 Super Mini, 4 MB: two app slots for updates over Wi-Fi (no factory app), plus
+# radio_img, where a radio (C6) update is staged before it goes over the UART.
+# Name,    Type, SubType, Offset, Size
+nvs,       data, nvs,     ,       0x6000,
+otadata,   data, ota,     ,       0x2000,
+phy_init,  data, phy,     ,       0x1000,
+ota_0,     app,  ota_0,   ,       1728K,
+ota_1,     app,  ota_1,   ,       1728K,
+radio_img, data, 0x40,    ,       512K,

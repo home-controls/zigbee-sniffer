@@ -1,0 +1,52 @@
+menu "Zigbee sniffer bridge"
+
+    config BRIDGE_WIFI_SSID
+        string "Wi-Fi network name"
+        default ""
+        help
+            Set in sdkconfig.secrets (git-ignored), not here.
+
+    config BRIDGE_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+        help
+            Set in sdkconfig.secrets (git-ignored), not here.
+
+    config BRIDGE_UPDATE_TOKEN
+        string "Firmware update token"
+        default ""
+        help
+            Required in the X-Update-Token header of POST /update/bridge and /update/radio.
+            Empty = updates over Wi-Fi are off. Set in sdkconfig.secrets (git-ignored), not here;
+            tools/update.py reads it from there.
+
+    config BRIDGE_TCP_PORT
+        int "TCP port Home Assistant connects to"
+        default 6638
+
+    config BRIDGE_UART_TX_GPIO
+        int "UART TX GPIO (to the radio's RX)"
+        default 43
+        help
+            GPIO43: the pin labelled TX on the ESP32-S3 Super Mini and the DevKitC-1. On the DevKitC-1
+            it is shared with the USB-to-UART chip: keep its UART port unplugged (or use 17/18).
+
+    config BRIDGE_UART_RX_GPIO
+        int "UART RX GPIO (from the radio's TX)"
+        default 44
+        help
+            GPIO44: the pin labelled RX on the ESP32-S3 Super Mini and the DevKitC-1.
+
+    config BRIDGE_UART_BAUD
+        int "UART baud rate (must match the radio)"
+        default 921600
+
+    config BRIDGE_LED_GPIO
+        int "Plain status LED GPIO, lit when low (-1 = none)"
+        range -1 48
+        default -1
+        help
+            Off by default: the ESP32-S3 Super Mini's LED is an RGB (WS2812) LED on GPIO48, which a
+            plain GPIO can't drive (the DevKitC-1 has one too, on GPIO38 or 48).
+
+endmenu

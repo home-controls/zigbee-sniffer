@@ -1,0 +1,4 @@
+# ESP32-S3 Super Mini (ESP32-S3FH4R2): 4 MB flash, 2 MB quad PSRAM in the chip.
+# UART to the radio on the pins labelled TX (GPIO43) / RX (GPIO44): the Kconfig defaults.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_SPIRAM_MODE_QUAD=y

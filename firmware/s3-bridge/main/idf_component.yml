@@ -1,0 +1,5 @@
+dependencies:
+  idf:
+    version: ">=5.5"
+  # Announces zigbee-sniffer.local / _zigbee-sniffer._tcp on the LAN
+  espressif/mdns: "^1.8.0"

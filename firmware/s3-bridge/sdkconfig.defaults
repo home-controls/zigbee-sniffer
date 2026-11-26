@@ -1,0 +1,22 @@
+# Settings every bridge board shares. Board specifics (flash size, PSRAM type, UART pins) are in
+# sdkconfig.board.<board>; CMakeLists.txt picks one by SNIFFER_BOARD.
+CONFIG_IDF_TARGET="esp32s3"
+# Logs over the native USB port; leaves UART0's pins alone
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_FREERTOS_HZ=1000
+CONFIG_LWIP_LOCAL_HOSTNAME="zigbee-sniffer"
+# mDNS without its console command (the console component isn't in this build)
+CONFIG_MDNS_ENABLE_CONSOLE_CLI=n
+
+# Two app slots + rollback: an update over Wi-Fi boots on trial and is kept only if it works
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# PSRAM for the frame buffer. Only explicit requests use it; a board where it doesn't come up
+# boots anyway and falls back to a small internal buffer. The board file sets quad or octal.
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_TYPE_AUTO=y
+CONFIG_SPIRAM_SPEED_80M=y
+CONFIG_SPIRAM_IGNORE_NOTFOUND=y
+CONFIG_SPIRAM_USE_CAPS_ALLOC=y

@@ -1,0 +1,18 @@
+CONFIG_IDF_TARGET="esp32c6"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+# The lamp's partition layout, so swapping firmwares keeps the lamp's Zigbee pairing in NVS
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_FREERTOS_HZ=1000
+
+# Raw 802.15.4 radio, no Zigbee stack
+CONFIG_IEEE802154_ENABLED=y
+# Room for bursts while the UART catches up
+CONFIG_IEEE802154_RX_BUFFER_SIZE=60
+
+# This sniffer has a 2.4 GHz antenna on the XIAO's U.FL connector
+CONFIG_SNIFF_EXTERNAL_ANTENNA=y
+
+# Updates from the bridge over the UART boot on trial and are kept only if the link works
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
