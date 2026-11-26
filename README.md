@@ -85,6 +85,20 @@ to run it against simulated sniffers: [`zigbee_sniffer/README.md`](zigbee_sniffe
 [`zigbee_sniffer/dev/README.md`](zigbee_sniffer/dev/README.md). The shared look comes from
 [zigbee-ui](https://github.com/home-controls/zigbee-ui).
 
+## How releases are made
+
+Every release is built by GitHub Actions from a tagged commit in this repository: the tests run, the
+radio firmware is built, then the add-on image (with that firmware inside) is built for each
+architecture and published to GitHub's container registry. The image and the firmware files each come
+with a signed record of how and from which commit they were built. Home Assistant only offers the
+update once its images exist. The release page has the radio firmware with a `SHA256SUMS` file. To check
+a download yourself, with the [GitHub CLI](https://cli.github.com/):
+
+```
+gh attestation verify zigbee_sniffer_radio-<version>-c6.bin --repo home-controls/zigbee-sniffer
+gh attestation verify oci://ghcr.io/home-controls/amd64-zigbee-sniffer:<version> --repo home-controls/zigbee-sniffer
+```
+
 ## License
 
 MIT, see [LICENSE](LICENSE). Zigbee and the Zigbee logo are trademarks of the Connectivity Standards

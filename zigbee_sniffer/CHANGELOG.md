@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.2
+
+- **Ready-made images**: releases are built on GitHub, so installing or updating downloads a finished
+  image instead of building it on your Home Assistant machine. Faster, and the same for everyone.
+- **Radio firmware comes with the app**: the Sniffer page's Firmware card lists the radio images built
+  with this release (ESP32-C6 for a radio wired to a Wi-Fi bridge, ESP32-C5 plugged in over USB),
+  ready to check and send. They are also attached to each GitHub release. The Wi-Fi bridge (ESP32-S3)
+  still needs your own build: its Wi-Fi name and password are built into it.
+
 ## 0.7.1
 
 - The name in the top bar opens the app menu, like Zigbee Studio's: Zigbee Studio and the Zigbee

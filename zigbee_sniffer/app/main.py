@@ -70,7 +70,7 @@ UPDATE_TOKEN = (OPTIONS.get("update_token") or "").strip()  # the bridges' CONFI
 PUBLISH_HA = bool(OPTIONS.get("publish_to_ha", True))
 DEVICE_SENSORS = bool(OPTIONS.get("device_sensors", True))
 ZIGBEE_STUDIO = bool(OPTIONS.get("zigbee_studio", True))  # Zigbee Studio may read and set up maps (studio.py)
-VERSION = "0.7.1"  # keep in step with config.yaml (tests/test_delivery_review.py checks)
+VERSION = "0.7.2"  # keep in step with config.yaml (tests/test_delivery_review.py checks)
 WEB_PORT = int(os.environ.get("SNIFFER_WEB_PORT", 8099))
 BIND = os.environ.get("SNIFFER_BIND", "0.0.0.0")
 LIVE_PORT = int(os.environ.get("SNIFFER_LIVE_PORT", 17760))  # the live Wireshark stream
@@ -84,6 +84,7 @@ CHANNEL_FILE = DATA_DIR / "channel.json"  # a channel picked on the Sniffer page
 KNOWN_FILE = DATA_DIR / "sniffers_known.json"  # sniffers that have connected before (a new one is an event)
 MOVES_FILE = DATA_DIR / "sniffer_moves.json"  # when each sniffer was last moved (its signal normals start again)
 FIRMWARE_DIR = CAPTURE_DIR.parent / "zigbee_sniffer" / "firmware"  # /share/zigbee_sniffer/firmware/*.bin
+BUNDLED_DIR = Path(os.environ.get("SNIFFER_BUNDLED_FIRMWARE", "/firmware"))  # radio images built with this release
 STATIC = Path(__file__).parent / "static"
 FLUSH_S = 30  # live counters go to the history this often (each write rewrites every device's current-minute page)
 DECODE_S = 60  # the tshark pass reads new frames this often
@@ -1059,17 +1060,35 @@ async def api_channel(request: web.Request) -> web.Response:
 # ---------------------------------------------------------------- web: the sniffer page
 
 def firmware_files() -> list[dict]:
-    """Images waiting in /share/zigbee_sniffer/firmware, to flash from the Sniffer page."""
+    """Images to flash from the Sniffer page: the radio images that come with this app (built with the
+    release, in the add-on image), then the ones waiting in /share/zigbee_sniffer/firmware."""
     out = []
-    for f in sorted(FIRMWARE_DIR.glob("*.bin"), key=lambda p: p.stat().st_mtime, reverse=True)[:20]:
+
+    def add(f: Path, bundled: bool) -> None:
         try:
             with open(f, "rb") as fh:
                 info = bridge_mod.image_info(fh.read(256))
             info["size"] = f.stat().st_size
         except (OSError, ValueError) as e:
             info = {"error": str(e)}
-        out.append({"name": f.name, "mtime": f.stat().st_mtime, **info})
+        out.append({"name": f.name, "mtime": f.stat().st_mtime, "bundled": bundled, **info})
+
+    for f in sorted(BUNDLED_DIR.glob("*.bin")):
+        add(f, True)
+    for f in sorted(FIRMWARE_DIR.glob("*.bin"), key=lambda p: p.stat().st_mtime, reverse=True)[:20]:
+        if not (BUNDLED_DIR / f.name).is_file():  # a bundled name wins: it is what the page listed
+            add(f, False)
     return out
+
+
+def firmware_path(name: str) -> Path | None:
+    """A file the Sniffer page listed, by name: a bundled image first, then /share's."""
+    name = Path(name).name
+    for d in (BUNDLED_DIR, FIRMWARE_DIR):
+        p = d / name
+        if p.suffix == ".bin" and p.is_file():
+            return p
+    return None
 
 
 def sniffer_findings(sn: Sniffer, totals: dict, events: list[dict], crc_minutes: list | None = None) -> list[dict]:
@@ -1239,8 +1258,8 @@ async def api_sniffer(request: web.Request) -> web.Response:
 async def firmware_bytes(request: web.Request) -> bytes:
     name = request.query.get("file")
     if name:
-        path = FIRMWARE_DIR / Path(name).name
-        if path.suffix != ".bin" or not path.is_file():
+        path = firmware_path(name)
+        if path is None:
             raise web.HTTPNotFound(text="no such firmware file")
         return await asyncio.to_thread(path.read_bytes)
     data = await request.read()

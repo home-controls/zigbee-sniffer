@@ -5,10 +5,12 @@ FROM ${BUILD_FROM}
 # tzdata lets the app read the TZ Supervisor passes, so files are named by local hour
 RUN apk add --no-cache tshark tzdata
 
-COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir --only-binary=:all: -r /tmp/requirements.txt
+COPY requirements.lock /tmp/requirements.lock
+RUN pip3 install --no-cache-dir --only-binary=:all: --require-hashes -r /tmp/requirements.lock
 
 COPY app /app
+# radio images built with this release (the release workflow fills firmware/; empty otherwise)
+COPY firmware /firmware
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 

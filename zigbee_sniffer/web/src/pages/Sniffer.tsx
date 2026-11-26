@@ -251,7 +251,7 @@ function Firmware({ d, refresh }: { d: any; refresh: () => void }) {
                   {F.files.map((x: any) => (
                     <tr>
                       <td class="wrap"><div class="mono fname">{x.name}</div>
-                        <div class="sub">{x.error ? <span class="warn-text">{x.error}</span> : `${x.target || "not sniffer firmware"} ${x.version || ""}`} · {f.ago(x.mtime)}</div></td>
+                        <div class="sub">{x.error ? <span class="warn-text">{x.error}</span> : `${x.target || "not sniffer firmware"} ${x.version || ""}${x.chip ? ` for ${x.chip}` : ""}`} · {x.bundled ? "comes with this app" : f.ago(x.mtime)}</div></td>
                       <td class="num"><button type="button" class="btn small" onClick={() => inspect({ file: x.name })}>Check</button></td>
                     </tr>
                   ))}
